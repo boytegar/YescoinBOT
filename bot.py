@@ -537,7 +537,55 @@ def level_up(token, useragent, id):
     except requests.exceptions.RequestException as e:
         print_(f'Error making request: {e}')
         return None
-    
+
+def getofflineyespacbonusinfo(token, useragent):
+    url = 'https://api-backend.yescoin.gold/game/getOfflineYesPacBonusInfo'
+    headers['Token'] = token
+    headers['User-Agent'] = useragent
+    try:
+        response_codes_done = range(200, 211)
+        response_code_notfound = range(400, 410)
+        response_code_failed = range(500, 530)
+        response = requests.get(url, headers=headers)
+        if response.status_code in response_codes_done:
+            return response.json()
+        elif response.status_code in response_code_notfound:
+            print(response.text)
+            return None
+        elif response.status_code in response_code_failed:
+            return None
+        else:
+            raise Exception(f'Unexpected status code: {response.status_code}')
+    except requests.exceptions.RequestException as e:
+        print(f'Error making request: {e}')
+        return None
+
+def claimofflinebonus(token, useragent, payload, time):
+    url = 'https://api.yescoin.gold/game/claimOfflineYesPacBonus'
+    sign = generate_random_hex()
+    headers = {}
+    headers['Token'] = token
+    headers['User-Agent'] = useragent
+    #headers['Sign'] = sign
+    #headers['Tm'] = str(time)
+    try:
+        response_codes_done = range(200, 211)
+        response_code_notfound = range(400, 410)
+        response_code_failed = range(500, 530)
+        response = requests.post(url, headers=headers, json=payload)
+        if response.status_code in response_codes_done:
+            return response.json()
+        elif response.status_code in response_code_notfound:
+            print(response.text)
+            return None
+        elif response.status_code in response_code_failed:
+            return None
+        else:
+            raise Exception(f'Unexpected status code: {response.status_code}')
+    except requests.exceptions.RequestException as e:
+        print(f'Error making request: {e}')
+        return None
+
 def printdelay(delay):
     now = datetime.now().isoformat(" ").split(".")[0]
     hours, remainder = divmod(delay, 3600)
@@ -556,9 +604,13 @@ def main():
     tokens = [None] * len(queries)
     walletaddr = [None] * len(queries)
     giftboxs = [0] * len(queries)
+    offlines = [0] * len(queries)
+
+    interval_giftbox = 3600
+    interval_offline = 7200
+
 
     selector_upgrade = input("Auto Upgrade level y/n  : ").strip().lower()
-    interval_giftbox = 3600
     while True:
         for index, query in enumerate(queries):
             parse = parse_query(query)
@@ -769,10 +821,7 @@ def main():
                                 if code == 0:
                                     print_(f"Level Up Pool Coin Success, Current Level {coinPoolTotalLevel+1}")
 
-                
-                
-
-            
+                           
             data_getspecialboxreload = getspecialboxreloadpage(token, useragent)
             if data_getspecialboxreload is not None:
                 code = data_getspecialboxreload.get('code')
@@ -804,6 +853,36 @@ def main():
                         data = data_collectbox.get('data')
                         print_(f"Claim Box : {data.get('collectAmount')}")
                         time.sleep(5)
+            
+                        time.sleep(2)
+            
+            if currentTime - offlines[index] >= interval_offline:
+                offlines[index] = currentTime
+                data_getofflineyespacbonusinfo = getofflineyespacbonusinfo(token, useragent)
+                if data_getofflineyespacbonusinfo is not None:
+                    code = data_getofflineyespacbonusinfo.get('code')
+                    if code == 0:
+                        data = data_getofflineyespacbonusinfo.get('data')
+                        detail_data = data[1]
+                        claimtype = detail_data.get('claimType')
+                        transId = detail_data.get('transactionId')
+                        claimtime = int(time.time())
+                        payload = {
+                            'claimType': claimtype,
+                            'createAt': claimtime,
+                            'destination': '',
+                            'id': transId
+                        }
+                        data_claimoffline = claimofflinebonus(token, useragent, payload, claimtime)
+                        if data_claimoffline is not None:
+                            code = data_claimoffline.get('code')
+                            if code == 0:
+                                data = data_claimoffline.get('data')
+                                print_(f"Collect Offline = {data.get('collectAmount')}")
+                                offline(token, useragent)
+                                time.sleep(1)
+                    else:
+                        print_(f"{data_getofflineyespacbonusinfo.get('message')}")
 
             defcount = 250
             while True:
