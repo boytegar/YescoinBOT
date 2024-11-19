@@ -728,7 +728,7 @@ def main():
                         data = datalogin.get('data')
                         tokendata = data.get('token')
                         token = tokendata
-                        save(user.get('id'), token)
+                        # save(user.get('id'), token)
                         print_("Refresh Token")
                     else:
                         print_(f"{datalogin.get('message')}")
