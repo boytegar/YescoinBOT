@@ -16,7 +16,7 @@ def load_credentials():
         # print("Token berhasil dimuat.")
         return queries
     except FileNotFoundError:
-        print("File tokens.txt tidak ditemukan.")
+        print("File query_id.txt tidak ditemukan.")
         return [  ]
     except Exception as e:
         print("Terjadi kesalahan saat memuat token:", str(e))
