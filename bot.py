@@ -74,7 +74,7 @@ def generate_random_hex(length=32):
     return secrets.token_hex(length // 2)
 
 def login(query, useragent):
-    url = 'https://api-backend.yescoin.gold/user/login'
+    url = 'https://bi.yescoin.gold/user/login'
     headers['User-Agent'] = useragent
     payload = {
         'code': f'{query}'
@@ -98,7 +98,7 @@ def login(query, useragent):
         return None
 
 def getgameinfo(token, useragent):
-    url = 'https://api-backend.yescoin.gold/game/getGameInfo'
+    url = 'https://bi.yescoin.gold/game/getGameInfo'
     headers['Token'] = token
     headers['User-Agent'] = useragent
     try:
@@ -120,7 +120,7 @@ def getgameinfo(token, useragent):
         return None
 
 def getaccountinfo(token, useragent):
-    url = 'https://api-backend.yescoin.gold/account/getAccountInfo'
+    url = 'https://bi.yescoin.gold/account/getAccountInfo'
     headers['Token'] = token
     headers['User-Agent'] = useragent
     try:
@@ -142,7 +142,7 @@ def getaccountinfo(token, useragent):
         return None
 
 def getspecialboxreloadpage(token, useragent):
-    url = 'https://api-backend.yescoin.gold/game/specialBoxReloadPage'
+    url = 'https://bi.yescoin.gold/game/specialBoxReloadPage'
     headers['Token'] = token
     headers['User-Agent'] = useragent
     try:
@@ -164,7 +164,7 @@ def getspecialboxreloadpage(token, useragent):
         return None
 
 def getspecialboxinfo(token, useragent):
-    url = 'https://api-backend.yescoin.gold/game/getSpecialBoxInfo'
+    url = 'https://bi.yescoin.gold/game/getSpecialBoxInfo'
     headers['Token'] = token
     headers['User-Agent'] = useragent
     try:
@@ -186,12 +186,12 @@ def getspecialboxinfo(token, useragent):
         return None
 
 def getacccountbuildinfo(token, useragent):
-    url = 'https://api-backend.yescoin.gold/build/getAccountBuildInfo'
+    url = 'https://bi.yescoin.gold/build/getAccountBuildInfo'
     headers['Token'] = token
     headers['User-Agent'] = useragent
     try:
         response_codes_done = range(200, 211)
-        response_code_notfound = range(400, 410)
+        response_code_notfound = range(230, 410)
         response_code_failed = range(500, 530)
         response = requests.get(url, headers=headers)
         if response.status_code in response_codes_done:
@@ -209,7 +209,7 @@ def getacccountbuildinfo(token, useragent):
 
 
 def collectCoin(token, useragent, count):
-    url = 'https://api-backend.yescoin.gold/game/collectCoin'
+    url = 'https://bi.yescoin.gold/game/collectCoin'
     headers['Token'] = token
     headers['User-Agent'] = useragent
     try:
@@ -231,7 +231,7 @@ def collectCoin(token, useragent, count):
         return None
 
 def getspecialbox(token, useragent):
-    url = 'https://api-backend.yescoin.gold/game/recoverSpecialBox'
+    url = 'https://bi.yescoin.gold/game/recoverSpecialBox'
     headers['Token'] = token
     headers['User-Agent'] = useragent
     try:
@@ -253,7 +253,7 @@ def getspecialbox(token, useragent):
         return None
 
 def getcoinpool(token, useragent):
-    url = 'https://api-backend.yescoin.gold/game/recoverCoinPool'
+    url = 'https://bi.yescoin.gold/game/recoverCoinPool'
     headers['Token'] = token
     headers['User-Agent'] = useragent
     try:
@@ -275,7 +275,7 @@ def getcoinpool(token, useragent):
         return None
 
 def collectspecialbox(token, useragent, payload):
-    url = 'https://api-backend.yescoin.gold/game/collectSpecialBoxCoin'
+    url = 'https://bi.yescoin.gold/game/collectSpecialBoxCoin'
     headers['Token'] = token
     headers['User-Agent'] = useragent
     try:
@@ -297,7 +297,7 @@ def collectspecialbox(token, useragent, payload):
         return None
 
 def getwallet(token, useragent):
-    url = 'https://api-backend.yescoin.gold/wallet/getWallet'
+    url = 'https://bi.yescoin.gold/wallet/getWallet'
     headers['Token'] = token
     headers['User-Agent'] = useragent
     try:
@@ -319,7 +319,7 @@ def getwallet(token, useragent):
         return None
 
 def offline(token, useragent):
-    url = 'https://api-backend.yescoin.gold/user/offline'
+    url = 'https://bi.yescoin.gold/user/offline'
     headers['Token'] = token
     headers['User-Agent'] = useragent
     try:
@@ -341,7 +341,7 @@ def offline(token, useragent):
         return None
 
 def get_daily(token, useragent):
-    url = 'https://api-backend.yescoin.gold/mission/getDailyMission'
+    url = 'https://bi.yescoin.gold/mission/getDailyMission'
     headers['Token'] = token
     headers['User-Agent'] = useragent
     try:
@@ -363,7 +363,7 @@ def get_daily(token, useragent):
         return None
 
 def finish_daily(token, useragent, mission_id):
-    url = 'https://api-backend.yescoin.gold/mission/finishDailyMission'
+    url = 'https://bi.yescoin.gold/mission/finishDailyMission'
     headers['Token'] = token
     headers['User-Agent'] = useragent
     try:
@@ -385,7 +385,7 @@ def finish_daily(token, useragent, mission_id):
         return None
 
 def get_finish_status_task(token, useragent):
-    url = 'https://api-backend.yescoin.gold/task/getFinishTaskBonusInfo'
+    url = 'https://bi.yescoin.gold/task/getFinishTaskBonusInfo'
     headers['Token'] = token
     headers['User-Agent'] = useragent
     try:
@@ -407,7 +407,7 @@ def get_finish_status_task(token, useragent):
         return None
 
 def get_account_build_info(token, useragent):
-    url = 'https://api-backend.yescoin.gold/build/getAccountBuildInfo'
+    url = 'https://bi.yescoin.gold/build/getAccountBuildInfo'
     headers['Token'] = token
     headers['User-Agent'] = useragent
     try:
@@ -429,7 +429,7 @@ def get_account_build_info(token, useragent):
         return None
 
 def get_task_list(token, useragent):
-    url = 'https://api-backend.yescoin.gold/task/getTaskList'
+    url = 'https://bi.yescoin.gold/task/getTaskList'
     headers['Token'] = token
     headers['User-Agent'] = useragent
     try:
@@ -451,7 +451,7 @@ def get_task_list(token, useragent):
         return None
 
 def check_task_status(token, useragent, task_id):
-    url = 'https://api-backend.yescoin.gold/task/checkTask'
+    url = 'https://bi.yescoin.gold/task/checkTask'
     headers['Token'] = token
     headers['User-Agent'] = useragent
     try:
@@ -473,7 +473,7 @@ def check_task_status(token, useragent, task_id):
         return None
     
 def claim_reward_task(token, useragent, task_id):
-    url = 'https://api-backend.yescoin.gold/task/claimTaskReward'
+    url = 'https://bi.yescoin.gold/task/claimTaskReward'
     headers['Token'] = token
     headers['User-Agent'] = useragent
     try:
@@ -495,7 +495,7 @@ def claim_reward_task(token, useragent, task_id):
         return None
     
 def claim_bonus_task(token, useragent, id):
-    url = 'https://api-backend.yescoin.gold/task/claimBonus'
+    url = 'https://bi.yescoin.gold/task/claimBonus'
     headers['Token'] = token
     headers['User-Agent'] = useragent
     try:
@@ -517,7 +517,7 @@ def claim_bonus_task(token, useragent, id):
         return None
 
 def level_up(token, useragent, id):
-    url = 'https://api-backend.yescoin.gold/build/levelUp'
+    url = 'https://bi.yescoin.gold/build/levelUp'
     headers['Token'] = token
     headers['User-Agent'] = useragent
     try:
@@ -539,7 +539,7 @@ def level_up(token, useragent, id):
         return None
 
 def getofflineyespacbonusinfo(token, useragent):
-    url = 'https://api-backend.yescoin.gold/game/getOfflineYesPacBonusInfo'
+    url = 'https://bi.yescoin.gold/game/getOfflineYesPacBonusInfo'
     headers['Token'] = token
     headers['User-Agent'] = useragent
     try:
@@ -790,6 +790,7 @@ def main():
                             if code == 0:
                                 print_("applied special box")
                                 time.sleep(10)
+
                     if selector_upgrade == 'y':
                         singleCoinLevel = data.get('singleCoinLevel')
                         singleCoinUpgradeCost = data.get('singleCoinUpgradeCost')
@@ -801,6 +802,7 @@ def main():
                                 if code == 0:
                                     currentAmount - singleCoinUpgradeCost
                                     print_(f"Level Up Single Coin Success, Current Level {singleCoinLevel+1}")
+
                         coinPoolRecoveryLevel = data.get('coinPoolRecoveryLevel')
                         coinPoolRecoveryUpgradeCost = data.get('coinPoolRecoveryUpgradeCost')
                         if coinPoolRecoveryUpgradeCost <= currentAmount:
@@ -811,6 +813,7 @@ def main():
                                 if code == 0:
                                     currentAmount - coinPoolRecoveryUpgradeCost
                                     print_(f"Level Up Recovery Coin Success, Current Level {coinPoolRecoveryLevel+1}")
+
                         coinPoolTotalLevel = data.get('coinPoolTotalLevel')
                         coinPoolTotalUpgradeCost = data.get('coinPoolTotalUpgradeCost')
                         if coinPoolTotalUpgradeCost <= currentAmount:
