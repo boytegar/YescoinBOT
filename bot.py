@@ -561,13 +561,79 @@ def getofflineyespacbonusinfo(token, useragent):
         return None
 
 def claimofflinebonus(token, useragent, payload, time):
-    url = 'https://api.yescoin.gold/game/claimOfflineYesPacBonus'
+    url = 'https://bi.yescoin.gold/game/claimOfflineYesPacBonus'
     sign = generate_random_hex()
     headers = {}
     headers['Token'] = token
     headers['User-Agent'] = useragent
     #headers['Sign'] = sign
     #headers['Tm'] = str(time)
+    try:
+        response_codes_done = range(200, 211)
+        response_code_notfound = range(400, 410)
+        response_code_failed = range(500, 530)
+        response = requests.post(url, headers=headers, json=payload)
+        if response.status_code in response_codes_done:
+            return response.json()
+        elif response.status_code in response_code_notfound:
+            print(response.text)
+            return None
+        elif response.status_code in response_code_failed:
+            return None
+        else:
+            raise Exception(f'Unexpected status code: {response.status_code}')
+    except requests.exceptions.RequestException as e:
+        print(f'Error making request: {e}')
+        return None
+
+def get_skin_list(token,useragent):
+    url = 'https://bi.yescoin.gold/skin/getSkinList'
+    headers['Token'] = token
+    headers['User-Agent'] = useragent
+    try:
+        response_codes_done = range(200, 211)
+        response_code_notfound = range(400, 410)
+        response_code_failed = range(500, 530)
+        response = requests.get(url, headers=headers)
+        if response.status_code in response_codes_done:
+            return response.json()
+        elif response.status_code in response_code_notfound:
+            print(response.text)
+            return None
+        elif response.status_code in response_code_failed:
+            return None
+        else:
+            raise Exception(f'Unexpected status code: {response.status_code}')
+    except requests.exceptions.RequestException as e:
+        print(f'Error making request: {e}')
+        return None
+
+def get_detail_skin(token, useragent, id):
+    url = f'https://bi.yescoin.gold/task/getCryptocurrencyExchangeTaskList?skinId={id}'
+    headers['Token'] = token
+    headers['User-Agent'] = useragent
+    try:
+        response_codes_done = range(200, 211)
+        response_code_notfound = range(400, 410)
+        response_code_failed = range(500, 530)
+        response = requests.get(url, headers=headers)
+        if response.status_code in response_codes_done:
+            return response.json()
+        elif response.status_code in response_code_notfound:
+            print(response.text)
+            return None
+        elif response.status_code in response_code_failed:
+            return None
+        else:
+            raise Exception(f'Unexpected status code: {response.status_code}')
+    except requests.exceptions.RequestException as e:
+        print(f'Error making request: {e}')
+        return None
+
+def update_bot(token, useragent, payload):
+    url = 'https://bi.yescoin.gold/build/toggleSwipeBotSwitch'
+    headers['Token'] = token
+    headers['User-Agent'] = useragent
     try:
         response_codes_done = range(200, 211)
         response_code_notfound = range(400, 410)
@@ -599,6 +665,41 @@ def parse_query(query: str):
     parsed_query['user'] = user_data
     return parsed_query
 
+def get(id):
+        tokens = json.loads(open("tokens.json").read())
+        if str(id) not in tokens.keys():
+            return None
+        return tokens[str(id)]
+
+def save(id, token):
+        tokens = json.loads(open("tokens.json").read())
+        tokens[str(id)] = token
+        open("tokens.json", "w").write(json.dumps(tokens, indent=4))
+
+
+def generate_token():
+    queries = load_credentials()
+    sum = len(queries)
+    for index, query in enumerate(queries):
+        parse = parse_query(query)
+        user = parse.get('user')
+        user_data = parse_and_reconstruct(query)
+        useragent = getuseragent(index)
+        print_(f"[ Account {index+1}/{sum} {user.get('username','')} ]")
+        token = get(user['id'])
+        if token == None:
+            datalogin = login(user_data, useragent)
+            if datalogin is not None:
+                codelogin = datalogin.get('code')
+                if codelogin == 0:
+                    data = datalogin.get('data')
+                    tokendata = data.get('token')
+                    token = tokendata
+                    save(user.get('id'), token)
+                    print_("Refresh Token")
+                else:
+                    print_(f"{datalogin.get('message')}")
+
 def main():
     queries = load_credentials()
     tokens = [None] * len(queries)
@@ -626,12 +727,12 @@ def main():
                     if codelogin == 0:
                         data = datalogin.get('data')
                         tokendata = data.get('token')
-                        tokens[index] = tokendata
+                        token = tokendata
+                        save(user.get('id'), token)
                         print_("Refresh Token")
                     else:
                         print_(f"{datalogin.get('message')}")
 
-            token = tokens[index]
             #GET ACCOUNT INFO
             data_account_info = getaccountinfo(token, useragent)
             if data_account_info is not None:
@@ -764,65 +865,86 @@ def main():
                                 print_(f"Claim Bonus Task Success, Reward {data_claim_task.get('data').get('bonusAmount')}")
 
             
-            if currentTime - giftboxs[index] >= interval_giftbox:
-                giftboxs[index] = currentTime
-                datalogin = login(user_data, useragent)
-                if datalogin is not None:
-                    codelogin = datalogin.get('code')
-                    if codelogin == 0:
-                        data = datalogin.get('data')
-                        tokendata = data.get('token')
-                        token = tokendata
-                        tokens[index] = tokendata
-                    else:
-                        print_(f"{datalogin.get('message')}")
+                        # if currentTime - giftboxs[index] >= interval_giftbox:
+            #     giftboxs[index] = currentTime
+            #     datalogin = login(user_data, useragent)
+            #     if datalogin is not None:
+            #         codelogin = datalogin.get('code')
+            #         if codelogin == 0:
+            #             data = datalogin.get('data')
+            #             tokendata = data.get('token')
+            #             token = tokendata
+            #             tokens[index] = tokendata
+            #         else:
+            #             print_(f"{datalogin.get('message')}")
                 
-                data_getaccountbuild = getacccountbuildinfo(token, useragent)
-                if data_getaccountbuild is not None:
-                    data = data_getaccountbuild.get('data')
-                    specialbox = data.get('specialBoxLeftRecoveryCount')
-                    coinpool = data.get('coinPoolLeftRecoveryCount')
-                    time.sleep(2)
-                    if specialbox > 0:
-                        data_specialbox = getspecialbox(token, useragent)
-                        if data_specialbox is not None:
-                            code = data_specialbox.get('code')
-                            if code == 0:
-                                print_("applied special box")
-                                time.sleep(10)
+            data_getaccountbuild = getacccountbuildinfo(token, useragent)
+            if data_getaccountbuild is not None:
+                data = data_getaccountbuild.get('data')
+                specialbox = data.get('specialBoxLeftRecoveryCount')
+                coinpool = data.get('coinPoolLeftRecoveryCount')
+                time.sleep(2)
+                if specialbox > 0:
+                    data_specialbox = getspecialbox(token, useragent)
+                    if data_specialbox is not None:
+                        code = data_specialbox.get('code')
+                        if code == 0:
+                            print_("applied special box")
+                            time.sleep(10)
 
-                    if selector_upgrade == 'y':
-                        singleCoinLevel = data.get('singleCoinLevel')
-                        singleCoinUpgradeCost = data.get('singleCoinUpgradeCost')
-                        if singleCoinUpgradeCost <= currentAmount:
-                            time.sleep(2)
-                            data_level_up = level_up(token, useragent, 1)
+                if selector_upgrade == 'y':
+                    singleCoinLevel = data.get('singleCoinLevel')
+                    singleCoinUpgradeCost = data.get('singleCoinUpgradeCost')
+                    swipeBotLevel = data.get('swipeBotLevel')
+                    swipeBotUpgradeCost = data.get('swipeBotUpgradeCost')
+                    if swipeBotLevel < 5:
+                        if swipeBotUpgradeCost <= currentAmount:
+                            data_level_up = level_up(token, useragent, 4)
                             if data_level_up is not None:
                                 code = data_level_up.get('code')
                                 if code == 0:
                                     currentAmount - singleCoinUpgradeCost
-                                    print_(f"Level Up Single Coin Success, Current Level {singleCoinLevel+1}")
-
-                        coinPoolRecoveryLevel = data.get('coinPoolRecoveryLevel')
-                        coinPoolRecoveryUpgradeCost = data.get('coinPoolRecoveryUpgradeCost')
-                        if coinPoolRecoveryUpgradeCost <= currentAmount:
-                            time.sleep(2)
-                            data_level_up = level_up(token, useragent, 2)
-                            if data_level_up is not None:
-                                code = data_level_up.get('code')
+                                    print_(f"Level Up Bot, Current Level {swipeBotLevel+1}")
+                    
+                    if swipeBotLevel > 0:
+                        openSwipeBot = data.get('openSwipeBot', False)
+                        if openSwipeBot == False:
+                            payload = True
+                            data_update_bot = update_bot(token, useragent, payload)
+                            if data_update_bot is not None:
+                                code = data_update_bot.get('code')
                                 if code == 0:
-                                    currentAmount - coinPoolRecoveryUpgradeCost
-                                    print_(f"Level Up Recovery Coin Success, Current Level {coinPoolRecoveryLevel+1}")
+                                    print_(f"Bot is Actived")
 
-                        coinPoolTotalLevel = data.get('coinPoolTotalLevel')
-                        coinPoolTotalUpgradeCost = data.get('coinPoolTotalUpgradeCost')
-                        if coinPoolTotalUpgradeCost <= currentAmount:
-                            time.sleep(2)
-                            data_level_up = level_up(token, useragent, 3)
-                            if data_level_up is not None:
-                                code = data_level_up.get('code')
-                                if code == 0:
-                                    print_(f"Level Up Pool Coin Success, Current Level {coinPoolTotalLevel+1}")
+                    if singleCoinUpgradeCost <= currentAmount:
+                        time.sleep(2)
+                        data_level_up = level_up(token, useragent, 1)
+                        if data_level_up is not None:
+                            code = data_level_up.get('code')
+                            if code == 0:
+                                currentAmount - singleCoinUpgradeCost
+                                print_(f"Level Up Single Coin Success, Current Level {singleCoinLevel+1}")
+
+                    coinPoolRecoveryLevel = data.get('coinPoolRecoveryLevel')
+                    coinPoolRecoveryUpgradeCost = data.get('coinPoolRecoveryUpgradeCost')
+                    if coinPoolRecoveryUpgradeCost <= currentAmount:
+                        time.sleep(2)
+                        data_level_up = level_up(token, useragent, 2)
+                        if data_level_up is not None:
+                            code = data_level_up.get('code')
+                            if code == 0:
+                                currentAmount - coinPoolRecoveryUpgradeCost
+                                print_(f"Level Up Recovery Coin Success, Current Level {coinPoolRecoveryLevel+1}")
+
+                    coinPoolTotalLevel = data.get('coinPoolTotalLevel')
+                    coinPoolTotalUpgradeCost = data.get('coinPoolTotalUpgradeCost')
+                    if coinPoolTotalUpgradeCost <= currentAmount:
+                        time.sleep(2)
+                        data_level_up = level_up(token, useragent, 3)
+                        if data_level_up is not None:
+                            code = data_level_up.get('code')
+                            if code == 0:
+                                print_(f"Level Up Pool Coin Success, Current Level {coinPoolTotalLevel+1}")
 
                            
             data_getspecialboxreload = getspecialboxreloadpage(token, useragent)
@@ -924,7 +1046,7 @@ def main():
                             break
                 time.sleep(5)
         delay = random.randint(600, 700)
-        printdelay(delay)
-        time.sleep(delay)
+        # printdelay(delay)
+        # time.sleep(delay)
 if __name__ == "__main__":
     main()
