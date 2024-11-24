@@ -1046,7 +1046,7 @@ def main():
                             break
                 time.sleep(5)
         delay = random.randint(600, 700)
-        # printdelay(delay)
-        # time.sleep(delay)
+        printdelay(delay)
+        time.sleep(delay)
 if __name__ == "__main__":
     main()
